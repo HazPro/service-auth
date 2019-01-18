@@ -52,21 +52,21 @@ export async function serviceUpdateUser(ctx: Koa.Context | any, next: Function) 
     const berear: string = ctx.get('Authorization')
     const token = berear.split(' ')[1]
     const pathParams = _.get(ctx, 'pathParams')
-    if (!token) return next(new Error('Authorization failed'))
+    if (!token) ctx.throw(400,new Error('Authorization failed'))
     let service: IKsuCertificate = null
     try {
         service = <IKsuCertificate>jwt.verify(token, ca.getPublicString())
     } catch {
-        return next(new Error('Broken authorization token'))
+        ctx.throw(400,new Error('Broken authorization token'))
     }
     if (service.permissions.indexOf('updateUser') < 0) {
-        return next(new Error('Service do not have permission updating of user'))
+        ctx.throw(400,new Error('Service do not have permission updating of user'))
     }
     const userData = await db.getDb()
         .collection('users')
         .findOne({ _id: DB.toObjectId(pathParams.id) })
     if (!userData) {
-        return next(new Error('User not found'))
+        ctx.throw(400,new Error('User not found'))
     }
     const user = Object.assign(userData, body)
     // console.log(user)
@@ -88,21 +88,21 @@ export async function serviceDeleteUser(ctx: Koa.Context | any, next: Function) 
     const berear: string = ctx.get('Authorization')
     const token = berear.split(' ')[1]
     const pathParams = _.get(ctx, 'pathParams')
-    if (!token) return next(new Error('Authorization failed'))
+    if (!token) ctx.throw(400,new Error('Authorization failed'))
     let service: IKsuCertificate = null
     try {
         service = <IKsuCertificate>jwt.verify(token, ca.getPublicString())
     } catch {
-        return next(new Error('Broken authorization token'))
+        ctx.throw(400,new Error('Broken authorization token'))
     }
     if (service.permissions.indexOf('removeUser') < 0) {
-        return next(new Error('Service do not have permission remove of user'))
+        ctx.throw(400,new Error('Service do not have permission remove of user'))
     }
     const userData = await db.getDb()
         .collection('users')
         .findOne({ _id: DB.toObjectId(pathParams.id) })
     if (!userData) {
-        return next(new Error('User not found'))
+        ctx.throw(400,new Error('User not found'))
     }
     await db.getDb()
         .collection('users')
@@ -120,25 +120,25 @@ export async function serviceJoinUser(ctx: Koa.Context | any, next: Function) {
     const db: DB = _.get(ctx, 'db')
     const berear: string = ctx.get('Authorization')
     const token = berear.split(' ')[1]
-    if (!token) return next(new Error('Authorization failed'))
+    if (!token) ctx.throw(400,new Error('Authorization failed'))
     let service: IKsuCertificate = null
     try {
         service = <IKsuCertificate>jwt.verify(token, ca.getPublicString())
     } catch (e) {
         console.log(e)
-        return next(new Error('Broken authorization token'))
+        ctx.throw(400,new Error('Broken authorization token'))
     }
     if (service.permissions.indexOf('joinUser') < 0) {
-        return next(new Error('Service do not have permission joining of user'))
+        ctx.throw(400,new Error('Service do not have permission joining of user'))
     }
     const { user, inviter } = body
     const inviterData = await db.getDb().collection('users').findOne({ username: inviter })
     if (!inviterData) {
-        return next(new Error('Inviter not found'))
+        ctx.throw(400,new Error('Inviter not found'))
     }
     const userData = await db.getDb().collection('users').findOne({ username: user })
     if (userData) {
-        return next(new Error('User already invited'))
+        ctx.throw(400,new Error('User already invited'))
     }
     const userInserted = await db.getDb().collection('users').insertOne({
         username: user,
@@ -163,11 +163,11 @@ export async function serviceAuth(ctx: Koa.Context | any, next: Function) {
     const logger: winston.Logger = _.get(ctx, 'logger')
     const body = _.get(ctx.request, 'body')
     if (_.isEmpty(body)) {
-        return next(new Error('Empty request'))
+        ctx.throw(400,new Error('Empty request'))
     }
     const { serviceName, serviceCertificate } = body
     if (!ca.validateCertificate(serviceCertificate)) {
-        return next(new Error('Invalid certificate'))
+        ctx.throw(400,new Error('Invalid certificate'))
     }
     const serviceCrt = new Certificate(serviceCertificate)
     db.getDb().collection('service').insertOne(

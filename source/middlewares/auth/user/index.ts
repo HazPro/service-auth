@@ -22,15 +22,15 @@ export async function login(ctx: Context | any, next: Function) {
     const logger: winston.Logger = _.get(ctx, 'logger')
     const body = _.get(ctx.request, 'body')
     if (_.isEmpty(body)) {
-        return next(new Error('Empty request'))
+        ctx.throw(400,new Error('Empty request'))
     }
     let { username, password } = body
     if (!db.isConnected()) {
-        return next(new Error('Try later'))
+        ctx.throw(400,new Error('Try later'))
     }
     const user = await db.getDb().collection('users').findOne({ username, password })
     if (!user) {
-        return next(new Error('Invalid username or password'))
+        ctx.throw(400,new Error('Invalid username or password'))
     }
     const secretOrPrivateKey = ca.getPrivateKey()
     const authToken = getToken(user, secretOrPrivateKey)
@@ -56,15 +56,15 @@ export async function signin(ctx: Context | any, next: Function) {
     const logger: winston.Logger = _.get(ctx, 'logger')
     const body = _.get(ctx.request, 'body')
     if (_.isEmpty(body)) {
-        return next(new Error('Empty request'))
+        ctx.throw(400,new Error('Empty request'))
     }
     const { username, password, org } = body
     if (!db.isConnected()) {
-        return next(new Error('Try later'))
+        ctx.throw(400,new Error('Try later'))
     }
     const user = await db.getDb().collection('users').findOne({ username })
     if (user) {
-        return next(new Error('Some users exists'))
+        ctx.throw(400,new Error('Some users exists'))
     }
     await db.getDb().collection('users').insertOne({
         username,
