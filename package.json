@@ -1,0 +1,37 @@
+{
+  "name": "ksu-auth",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Pronin Anton <pronin@hazpro.ru>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "rm -rf ./build && tsc",
+    "start": "ts-node ./source/index.ts",
+    "test": "mocha -r ts-node/register test/**/*Test.ts"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^8.4.0",
+    "koa": "^2.6.2",
+    "koa-bodyparser": "^4.2.1",
+    "lodash": "^4.17.11",
+    "mongodb": "^3.1.10",
+    "node-forge": "^0.7.6",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/jsonwebtoken": "^8.3.0",
+    "@types/koa": "^2.0.48",
+    "@types/lodash": "^4.14.119",
+    "@types/mocha": "^5.2.5",
+    "@types/mongodb": "^3.1.18",
+    "@types/node-forge": "^0.7.10",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "mongo-mock": "^3.3.2",
+    "ts-node": "^7.0.1",
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.2.2"
+  }
+}
