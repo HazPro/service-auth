@@ -3,7 +3,7 @@ import DB from '../../../db'
 import * as winston from 'winston'
 import * as _ from 'lodash'
 import * as jwt from 'jsonwebtoken'
-import { Certificate, IKsuCertificate } from '../../../cert'
+import { Certificate, IKsuCertificate } from '@hazpro/auth/build/cert'
 import * as crypto from 'crypto'
 
 function createRandomPassword() {
@@ -53,7 +53,6 @@ export async function serviceUpdateUser(ctx: Koa.Context | any, next: Function) 
     const token = berear.split(' ')[1]
     const pathParams = _.get(ctx, 'pathParams')
     if (!token) return next(new Error('Authorization failed'))
-    ca.sign(token)
     let service: IKsuCertificate = null
     try {
         service = <IKsuCertificate>jwt.verify(token, ca.getPublicString())
@@ -125,7 +124,8 @@ export async function serviceJoinUser(ctx: Koa.Context | any, next: Function) {
     let service: IKsuCertificate = null
     try {
         service = <IKsuCertificate>jwt.verify(token, ca.getPublicString())
-    } catch {
+    } catch (e) {
+        console.log(e)
         return next(new Error('Broken authorization token'))
     }
     if (service.permissions.indexOf('joinUser') < 0) {
@@ -150,7 +150,7 @@ export async function serviceJoinUser(ctx: Koa.Context | any, next: Function) {
     ctx.body = {
         error: false,
         result: 'User invited',
-        user: { 
+        user: {
             id: userInserted.insertedId
         }
     }
@@ -173,8 +173,7 @@ export async function serviceAuth(ctx: Koa.Context | any, next: Function) {
     db.getDb().collection('service').insertOne(
         Object.assign({ serviceName }, serviceCrt.getInfo())
     )
-
-    const token = jwt.sign(serviceCrt.getInfo(), ca.getPublicString())
+    const token = jwt.sign(serviceCrt.getInfo(), ca.getPrivateKey(), { algorithm: 'RS512' })
     ctx.body = {
         error: false,
         result: 'Authenticate success',

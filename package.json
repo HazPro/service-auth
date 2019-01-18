@@ -11,6 +11,8 @@
     "test": "mocha -r ts-node/register test/**/*Test.ts"
   },
   "dependencies": {
+    "@hazpro/auth": "^1.0.4",
+    "@hazpro/queue": "^1.0.0",
     "jsonwebtoken": "^8.4.0",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",

@@ -4,7 +4,7 @@ import * as bodyparser from 'koa-bodyparser'
 import * as middlewares from '../middlewares'
 import * as _ from 'lodash'
 import DB from '../db'
-import { Certificate } from '../cert'
+import { Auth } from '@hazpro/auth'
 
 export default class HttpServer {
     httpHandler: Koa
@@ -12,7 +12,7 @@ export default class HttpServer {
     logger: winston.Logger
     config: any
     db: DB
-    ca: Certificate
+    ca: Auth
     /** */
     constructor(
         port: number,
@@ -25,7 +25,7 @@ export default class HttpServer {
         if (this.db.isConnected()) {
             this.db.connect()
         }
-        this.ca = Certificate.fromFile(config.ca)
+        this.ca = new Auth(config.ca)
         this.port = port
         this.httpHandler = new Koa()
         if (!logger) {
@@ -45,7 +45,7 @@ export default class HttpServer {
     async setExtensions(ctx: Koa.Context, next: Function) {
         _.set(ctx, 'db', this.db)
         _.set(ctx, 'config', this.config)
-        _.set(ctx, 'ca', this.ca)
+        _.set(ctx, 'ca', this.ca.getCerificate())
         await next()
     }
     async httpLogger(ctx: Koa.Context, next: Function) {

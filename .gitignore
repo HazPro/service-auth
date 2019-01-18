@@ -62,3 +62,4 @@ typings/
 yarn-error.log
 node_modules
 build
+*.js

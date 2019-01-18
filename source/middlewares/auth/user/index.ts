@@ -3,7 +3,7 @@ import DB from '../../../db'
 import * as winston from 'winston'
 import * as _ from 'lodash'
 import * as jwt from 'jsonwebtoken'
-import { Certificate } from '../../../cert'
+import { Certificate } from '@hazpro/auth/build/cert'
 
 export default async function handler(ctx: Context | any, next: Function) {
     switch (ctx.path) {

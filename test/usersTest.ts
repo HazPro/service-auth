@@ -4,7 +4,7 @@ import * as db from 'mongo-mock'
 import * as config from '../source/config'
 import * as _ from 'lodash'
 import { expect } from 'chai'
-import { Certificate } from '../source/cert'
+import { Certificate } from '@hazpro/auth/build/cert'
 
 const loggerMock = {
     log: (level, msg) => {

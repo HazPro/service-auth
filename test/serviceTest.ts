@@ -3,7 +3,7 @@ import * as DB from '../source/db'
 import * as config from '../source/config'
 import { serviceAuth, serviceJoinUser, serviceUpdateUser, serviceDeleteUser } from '../source/middlewares/auth/service'
 import { expect } from 'chai'
-import { Certificate } from '../source/cert'
+import { Certificate } from '@hazpro/auth/build/cert'
 import * as fs from 'fs'
 import * as _ from 'lodash'
 
@@ -50,6 +50,7 @@ describe('Service test', () => {
             token = body.token
             done()
         }, done)
+        token = _.get(ctx,'body.token')
     })
     it('test join user', async () => {
         if (!token) throw new Error('Service not auth')
